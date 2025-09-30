@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import BottomPanel from "./bottomPanelComponent";
 
-// Your Geoapify API key
-const GEOAPIFY_API_KEY = "c14486c8b8eb431184047104880673b8";
+const GEOAPIFY_API_KEY = 'c14486c8b8eb431184047104880673b8'
 
 export default function MapComponent() {
   const [location, setLocation] = useState(null);
@@ -36,8 +35,6 @@ export default function MapComponent() {
 
     const lat = location.coords.latitude;
     const lon = location.coords.longitude;
-
-    const GEOAPIFY_API_KEY = 'c14486c8b8eb431184047104880673b8'
 
     const url = `https://api.geoapify.com/v2/places?categories=catering.bar,catering.pub,catering.biergarten,catering.taproom&filter=circle:${lon},${lat},${radius}&apiKey=${GEOAPIFY_API_KEY}`;
 
