@@ -1,7 +1,11 @@
 import { View, Text, Pressable } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetView, BottomSheetFlashList } from '@gorhom/bottom-sheet';
+import { styles } from "../styles/styles";
+import BottomPanelButtonsComponent from "./bottomPanelButtonsComponent";
 
 export default function BottomPanel({
   radius,
@@ -11,99 +15,55 @@ export default function BottomPanel({
   selectedCount,
   setSelectedCount,
   generateRandomBars,
+  randomBars
 }) {
-  const [pickerVisible, setPickerVisible] = useState(false);
+  const snapPoints = useMemo(() => ['5%', '25%','50%','85%',], []) // useMemo is used for the bottomSheet to not stick
+  const bottomSheetRef = useRef(); // https://www.youtube.com/watch?v=oIEykI5oagI&t=108s
+  const keyExtractor = (item, index) => item.id?.toString() ?? index.toString()
+
+  // callbacks
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+    const renderItem = useCallback(({ item }) => {
+    return (
+      <View key={item} style={styles.itemContainer}>
+        <Text>{item.name}</Text>
+      </View>
+    );
+  }, []);
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        bottom: 20,
-        left: 20,
-        right: 20,
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        padding: 15,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-      }}
-    >
-      {/* Radius Slider */}
-      <Text>Found {bars.length} from radius: {radius} m</Text>
-      <Slider
-        style={{ width: "100%", height: 40 }}
-        minimumValue={500}
-        maximumValue={3000}
-        step={100}
-        value={radius}
-        onValueChange={setRadius}
-        minimumTrackTintColor="#1E90FF"
-        maximumTrackTintColor="#000000"
-      />
-
-      <Text>Selected amount of bars for pub crawl: {selectedCount} </Text>
-      {/* Button to toggle Picker */}
-      <Pressable
-        onPress={() => setPickerVisible((prev) => !prev)}
-        style={{
-          marginTop: 10,
-          backgroundColor: "#1E90FF",
-          padding: 10,
-          borderRadius: 8,
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "#fff", fontWeight: "bold" }}>
-          {pickerVisible ? "Hide Picker" : "Select Number of Bars"}
-        </Text>
-      </Pressable>
-
-      {/* Conditional Picker */}
-      {pickerVisible && (
-        <>
-          <Picker
-            selectedValue={selectedCount}
-            onValueChange={(itemValue) => setSelectedCount(itemValue)}
-          >
-            {[3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-              <Picker.Item key={num} label={num.toString()} value={num} />
-            ))}
-          </Picker>
-
-          {/* Button to generate random bars */}
-        </>
-      )}
-
-      {/* Refresh Location */}
-      <Pressable
-        onPress={refreshLocation}
-        style={{
-            marginTop: 10,
-            backgroundColor: "#1E90FF",
-            padding: 10,
-            borderRadius: 8,
-            alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "#fff", fontWeight: "bold" }}>Refresh Location</Text>
-      </Pressable>
-        <Pressable
-          onPress={generateRandomBars}
-          style={{
-            marginTop: 10,
-            backgroundColor: "orange",
-            padding: 10,
-            borderRadius: 8,
-            alignItems: "center",
-          }}
+    
+      <BottomSheet
+        ref={bottomSheetRef}
+        onChange={handleSheetChanges}
+        snapPoints={snapPoints}
+        index={2}
+        enableContentPanningGesture={true}
+        enableHandlePanningGesture={true}
+        keyboardBehavior="interactive"
         >
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>
-            Select Random Bars
-          </Text>
-        </Pressable>
-    </View>
+        <BottomSheetView style={styles.contentContainer}>
+        <BottomPanelButtonsComponent 
+          radius={radius}
+          setRadius={setRadius}
+          refreshLocation={refreshLocation}
+          bars={bars}
+          selectedCount={selectedCount}
+          setSelectedCount={setSelectedCount}
+          generateRandomBars={generateRandomBars}
+          randomBars={randomBars}
+        />
+        <BottomSheetFlashList
+          data={randomBars}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          estimatedItemSize={50}
+          nestedScrollEnabled={true}
+        />
+        </BottomSheetView>
+      </BottomSheet>
   );
 }
