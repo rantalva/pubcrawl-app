@@ -3,6 +3,8 @@ import { View, Text, Alert } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import BottomPanel from "./bottomPanelComponent";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 const GEOAPIFY_API_KEY = 'c14486c8b8eb431184047104880673b8'
 
@@ -90,57 +92,60 @@ export default function MapComponent() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        showsMyLocationButton
-        showsUserLocation
-        style={{ flex: 1 }}
-        initialRegion={{
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.0322,
-          longitudeDelta: 0.0221,
-        }}
-      >
-        {/* Radius circle */}
-        <Circle
-          center={{
+    <GestureHandlerRootView>
+      <View style={{ flex: 1 }}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          showsMyLocationButton
+          showsUserLocation
+          style={{ flex: 1 }}
+          initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
+            latitudeDelta: 0.0322,
+            longitudeDelta: 0.0221,
           }}
-          radius={radius}
-          strokeColor="rgba(0,0,255,0.5)"
-          fillColor="rgba(0,0,255,0.2)"
-        />
-        {/* Bars 
-        {bars.map((bar) => (
-          <Marker
-            key={bar.id}
-            coordinate={{ latitude: bar.lat, longitude: bar.lon }}
-            title={bar.name}
-            pinColor="orange"
+        >
+          {/* Radius circle */}
+          <Circle
+            center={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            }}
+            radius={radius}
+            strokeColor="rgba(0,0,255,0.5)"
+            fillColor="rgba(0,0,255,0.2)"
           />
-        ))} 
-          */}
+          {/* Bars 
+          {bars.map((bar) => (
+            <Marker
+              key={bar.id}
+              coordinate={{ latitude: bar.lat, longitude: bar.lon }}
+              title={bar.name}
+              pinColor="orange"
+            />
+          ))} 
+            */}
 
-          {/* Highlight random selected bars in orange */}
-          {randomBars.map((bar) => (
-          <Marker key={"selected-" + bar.id} coordinate={{ latitude: bar.lat, longitude: bar.lon }} title={bar.name} pinColor="orange" />
-        ))}
-        
-      </MapView>
+            {/* Highlight random selected bars in orange */}
+            {randomBars.map((bar) => (
+            <Marker key={"selected-" + bar.id} coordinate={{ latitude: bar.lat, longitude: bar.lon }} title={bar.name} pinColor="orange" />
+          ))}
+          
+        </MapView>
 
-      {/* Bottom panel with slider and refresh */}
-      <BottomPanel
-        radius={radius}
-        setRadius={setRadius}
-        refreshLocation={fetchLocation}
-        bars={bars}
-        selectedCount={selectedCount}
-        setSelectedCount={setSelectedCount}
-        generateRandomBars={generateRandomBars}
-      />
-    </View>
+        {/* Bottom panel with slider and refresh */}
+        <BottomPanel
+          radius={radius}
+          setRadius={setRadius}
+          refreshLocation={fetchLocation}
+          bars={bars}
+          selectedCount={selectedCount}
+          setSelectedCount={setSelectedCount}
+          generateRandomBars={generateRandomBars}
+          randomBars={randomBars}
+        />
+      </View>
+    </GestureHandlerRootView>
   );
 }

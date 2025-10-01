@@ -23,5 +23,18 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,   // Android shadow
-  }
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 30,
+  },
+  picker: {
+    height: 150, 
+    width: "100%"
+  },
+    itemContainer: {
+    padding: 6,
+    margin: 6,
+    backgroundColor: "#eee",
+  },
 });
