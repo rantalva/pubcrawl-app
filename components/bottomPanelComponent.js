@@ -15,18 +15,23 @@ export default function BottomPanel({
   selectedCount,
   setSelectedCount,
   generateRandomBars,
-  randomBars
+  randomBars,
+  setRandomBars,
+  fetchMultiStopRoute
 }) {
-  const snapPoints = useMemo(() => ['5%', '25%','50%','85%',], []) // useMemo is used for the bottomSheet to not stick
+  const snapPoints = useMemo(() => ['5%', '25%','50%','85%',], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
   const bottomSheetRef = useRef(); // https://www.youtube.com/watch?v=oIEykI5oagI&t=108s
   const keyExtractor = (item, index) => item.id?.toString() ?? index.toString()
+
+  const handleCollapsePress = () => bottomSheetRef.current.collapse()
+  const handleOpenPress = () => bottomSheetRef.current.expand()
 
   // callbacks
   const handleSheetChanges = useCallback((index) => {
     console.log('handleSheetChanges', index);
   }, []);
 
-    const renderItem = useCallback(({ item }) => {
+    const renderItem = useCallback(({ item }) => { // rendering items in Bottomsheetflashlist
     return (
       <View key={item} style={styles.itemContainer}>
         <Text>{item.name}</Text>
@@ -35,7 +40,7 @@ export default function BottomPanel({
   }, []);
 
   return (
-    
+        
       <BottomSheet
         ref={bottomSheetRef}
         onChange={handleSheetChanges}
@@ -45,6 +50,7 @@ export default function BottomPanel({
         enableHandlePanningGesture={true}
         keyboardBehavior="interactive"
         >
+          {/*Commenting fucking sucks in react */}
         <BottomSheetView style={styles.contentContainer}>
         <BottomPanelButtonsComponent 
           radius={radius}
@@ -55,6 +61,10 @@ export default function BottomPanel({
           setSelectedCount={setSelectedCount}
           generateRandomBars={generateRandomBars}
           randomBars={randomBars}
+          handleCollapsePress={handleCollapsePress}
+          handleOpenPress={handleOpenPress}
+          setRandomBars={setRandomBars}
+          fetchMultiStopRoute={fetchMultiStopRoute} // new method
         />
         <BottomSheetFlashList
           data={randomBars}

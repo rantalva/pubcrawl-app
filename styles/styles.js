@@ -37,4 +37,17 @@ export const styles = StyleSheet.create({
     margin: 6,
     backgroundColor: "#eee",
   },
+    locationButton: {
+    position: "absolute",
+    top: 40, // adjust distance from top
+    right: 20, // adjust distance from right
+    backgroundColor: "#1e88e5",
+    borderRadius: 30,
+    padding: 12,
+    elevation: 5, // for shadow on Android
+    shadowColor: "#000", // for shadow on iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+  },
 });

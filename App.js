@@ -6,8 +6,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SettingsComponent from './components/settingsComponent';
 
-
-
 export default function App() {
 
   
@@ -17,9 +15,8 @@ const Tab = createBottomTabNavigator();
     
     <View style={styles.container}>
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={MapComponent} />
-        <Tab.Screen name="Pub" component={SettingsComponent} />
+      <Tab.Navigator >
+        <Tab.Screen name="Home" component={MapComponent} options={{headerShown: false}} />
         <Tab.Screen name="Settings" component={SettingsComponent} />
       </Tab.Navigator>
     </NavigationContainer>

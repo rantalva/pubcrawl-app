@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Button } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState, useCallback, useMemo, useRef } from "react";
@@ -14,11 +14,17 @@ export default function BottomPanelButtonsComponent({
     selectedCount,
     setSelectedCount,
     generateRandomBars,
-    randomBars
+    randomBars,
+    handleCollapsePress,
+    handleOpenPress,
+    setRandomBars,
+    fetchMultiStopRoute
 }) {
     const [pickerVisible, setPickerVisible] = useState(false);
     return (
       <View>
+        <Button onPress={handleCollapsePress} title="Close" />
+        <Button onPress={handleOpenPress} title="Open" />
          <Text>Found {bars.length} from radius: {radius} m</Text>
        <View>
           <Slider
@@ -78,7 +84,7 @@ export default function BottomPanelButtonsComponent({
         <Text style={{ color: "#fff", fontWeight: "bold" }}>Refresh Location</Text>
       </Pressable>
         <Pressable
-          onPress={generateRandomBars}
+          onPress={async () => {await generateRandomBars(); handleOpenPress();}} // new method 
           style={{
             marginTop: 10,
             backgroundColor: "orange",
@@ -91,6 +97,14 @@ export default function BottomPanelButtonsComponent({
             Select Random Bars
           </Text>
         </Pressable>
+        <Button
+        onPress={() => {setRandomBars([]); handleCollapsePress();}}
+        title="Empty bars"
+        />
+        <Button 
+        onPress={fetchMultiStopRoute}
+        title='fetch route'
+        />
       </View>
     )
   };

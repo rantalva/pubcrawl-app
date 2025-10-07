@@ -1,12 +1,16 @@
-import MapView, { Marker, Circle, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Circle, PROVIDER_GOOGLE, Polyline, Polygon } from "react-native-maps";
 import { View, Text, Alert } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import BottomPanel from "./bottomPanelComponent";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Or any icon library
+import { styles } from "../styles/styles";
 
 
 const GEOAPIFY_API_KEY = 'c14486c8b8eb431184047104880673b8'
+const categories = 'catering.bar,catering.pub,catering.biergarten,catering.taproom'
 
 export default function MapComponent() {
   const [location, setLocation] = useState(null);
@@ -15,6 +19,22 @@ export default function MapComponent() {
   const timeoutRef = useRef(null);
   const [selectedCount, setSelectedCount] = useState(3);
   const [randomBars, setRandomBars] = useState([]);
+  const mapRef = useRef(null);
+  const [routes, setRoutes] = useState([]); 
+
+    const goToUserLocation = () => {
+    if (!location) return;
+
+    mapRef.current.animateToRegion(
+      {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0322,
+        longitudeDelta: 0.0221,
+      },
+      1000
+    );
+  };
 
   // Fetch user location
   async function fetchLocation() {
@@ -38,7 +58,7 @@ export default function MapComponent() {
     const lat = location.coords.latitude;
     const lon = location.coords.longitude;
 
-    const url = `https://api.geoapify.com/v2/places?categories=catering.bar,catering.pub,catering.biergarten,catering.taproom&filter=circle:${lon},${lat},${radius}&apiKey=${GEOAPIFY_API_KEY}`;
+    const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&apiKey=${GEOAPIFY_API_KEY}`;
 
     try {
       const response = await fetch(url);
@@ -80,7 +100,41 @@ export default function MapComponent() {
     const shuffled = [...bars].sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, Math.min(selectedCount, bars.length));
     setRandomBars(selected);
+
+
+    setTimeout(fetchRoute, 300);
   };
+
+
+
+    const fetchMultiStopRoute = async () => {
+        if (!location || randomBars.length === 0) return;
+        const allRoutes = [];
+        const stops = [
+          { lat: location.coords.latitude, lon: location.coords.longitude },
+          ...randomBars,
+        ];
+
+        for (let i = 0; i < stops.length - 1; i++) {
+          const from = stops[i];
+          const to = stops[i + 1];
+          const routeUrl = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=walk&apiKey=${GEOAPIFY_API_KEY}`;
+          try {
+            const res = await fetch(routeUrl);
+            const data = await res.json();
+            if (data.features && data.features.length > 0) {
+              const coords = data.features[0].geometry.coordinates[0].map(
+                ([lon, lat]) => ({ latitude: lat, longitude: lon })
+              );
+              allRoutes.push(coords);
+            }
+          } catch (err) {
+            console.error("Route fetch failed:", err);
+          }
+        }
+
+        setRoutes(allRoutes);
+      };
 
   // Initial loading
   if (!location) {
@@ -95,8 +149,9 @@ export default function MapComponent() {
     <GestureHandlerRootView>
       <View style={{ flex: 1 }}>
         <MapView
+        ref={mapRef}
           provider={PROVIDER_GOOGLE}
-          showsMyLocationButton
+          showsMyLocationButton={false}
           showsUserLocation
           style={{ flex: 1 }}
           initialRegion={{
@@ -131,8 +186,22 @@ export default function MapComponent() {
             {randomBars.map((bar) => (
             <Marker key={"selected-" + bar.id} coordinate={{ latitude: bar.lat, longitude: bar.lon }} title={bar.name} pinColor="orange" />
           ))}
-          
+
+          {/* Draw all routes */}
+          {routes.map((coords, idx) => (
+            <Polyline
+              key={`route-${idx}`}
+              coordinates={coords}
+              strokeColor="orange"
+              strokeWidth={4}
+            />
+          ))}       
         </MapView>
+
+        {/* Custom location button */}
+        <TouchableOpacity style={styles.locationButton} onPress={goToUserLocation}>
+          <Ionicons name="locate" size={24} color="white" />
+        </TouchableOpacity>
 
         {/* Bottom panel with slider and refresh */}
         <BottomPanel
@@ -144,6 +213,8 @@ export default function MapComponent() {
           setSelectedCount={setSelectedCount}
           generateRandomBars={generateRandomBars}
           randomBars={randomBars}
+          setRandomBars={setRandomBars}
+          fetchMultiStopRoute={fetchMultiStopRoute}
         />
       </View>
     </GestureHandlerRootView>
