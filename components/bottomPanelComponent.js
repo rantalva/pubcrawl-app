@@ -17,13 +17,18 @@ export default function BottomPanel({
   generateRandomBars,
   randomBars,
   setRandomBars,
-  fetchMultiStopRoute
+  fetchMultiStopRoute,
+  bottomSheetRef,
+  setRoutes,
+  location,
+  fetchSingleRoute,
+  isLoading
 }) {
-  const snapPoints = useMemo(() => ['5%', '25%','50%','85%',], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
-  const bottomSheetRef = useRef(); // https://www.youtube.com/watch?v=oIEykI5oagI&t=108s
+  const snapPoints = useMemo(() => ['5%', '40%','85%',], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
   const keyExtractor = (item, index) => item.id?.toString() ?? index.toString()
 
-  const handleCollapsePress = () => bottomSheetRef.current.collapse()
+  const handleCollapsePress = () => bottomSheetRef.current.snapToIndex(3)
+  const handleClosePress = () => bottomSheetRef.current.snapToIndex(0)
   const handleOpenPress = () => bottomSheetRef.current.expand()
 
   // callbacks
@@ -45,7 +50,7 @@ export default function BottomPanel({
         ref={bottomSheetRef}
         onChange={handleSheetChanges}
         snapPoints={snapPoints}
-        index={2}
+        index={3}
         enableContentPanningGesture={true}
         enableHandlePanningGesture={true}
         keyboardBehavior="interactive"
@@ -61,17 +66,17 @@ export default function BottomPanel({
           setSelectedCount={setSelectedCount}
           generateRandomBars={generateRandomBars}
           randomBars={randomBars}
+          handleClosePress={handleClosePress}
           handleCollapsePress={handleCollapsePress}
           handleOpenPress={handleOpenPress}
           setRandomBars={setRandomBars}
-          fetchMultiStopRoute={fetchMultiStopRoute} // new method
-        />
-        <BottomSheetFlashList
-          data={randomBars}
+          fetchMultiStopRoute={fetchMultiStopRoute}
+          setRoutes={setRoutes}
+          location={location}
+          fetchSingleRoute={fetchSingleRoute}
+          isLoading={isLoading}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          estimatedItemSize={50}
-          nestedScrollEnabled={true}
         />
         </BottomSheetView>
       </BottomSheet>

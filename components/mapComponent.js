@@ -1,8 +1,9 @@
 import MapView, { Marker, Circle, PROVIDER_GOOGLE, Polyline, Polygon } from "react-native-maps";
 import { View, Text, Alert } from "react-native";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import * as Location from "expo-location";
 import BottomPanel from "./bottomPanelComponent";
+import NoLocationComponent from "./noLocationComponent";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Or any icon library
@@ -12,7 +13,7 @@ import { styles } from "../styles/styles";
 const GEOAPIFY_API_KEY = 'c14486c8b8eb431184047104880673b8'
 const categories = 'catering.bar,catering.pub,catering.biergarten,catering.taproom'
 
-export default function MapComponent() {
+export default function MapComponent({ bottomSheetRef }) {
   const [location, setLocation] = useState(null);
   const [radius, setRadius] = useState(1000); // meters
   const [bars, setBars] = useState([]);
@@ -20,7 +21,9 @@ export default function MapComponent() {
   const [selectedCount, setSelectedCount] = useState(3);
   const [randomBars, setRandomBars] = useState([]);
   const mapRef = useRef(null);
-  const [routes, setRoutes] = useState([]); 
+  const [routes, setRoutes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortControllerRef = useRef(null);
 
     const goToUserLocation = () => {
     if (!location) return;
@@ -94,63 +97,83 @@ export default function MapComponent() {
   }, [radius, location]);
   
 
-    const generateRandomBars = () => {
-    if (bars.length === 0) return;
+    const generateRandomBars = useCallback(async () => {
+  if (bars.length === 0 || isLoading) {
+    console.log('Skipping - already loading or no bars');
+    return;
+  }
 
+  // Cancel previous API call
+  if (abortControllerRef.current) {
+    abortControllerRef.current.abort();
+  }
+
+  setIsLoading(true);
+  
+  try {
     const shuffled = [...bars].sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, Math.min(selectedCount, bars.length));
     setRandomBars(selected);
+    
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('Error generating bars:', error);
+      Alert.alert('Error', 'Failed to generate bars');
+    }
+  } finally {
+    setIsLoading(false);
+  }
+}, [bars, selectedCount, isLoading]);
 
+  // Alternative: Fetch single route for all stops (more efficient)
+  const fetchSingleRoute = async (signal) => {
+    if (!location || randomBars.length === 0) return Alert.alert("No bars selected for route");
 
-    setTimeout(fetchRoute, 300);
+    try {
+      // Create waypoints string: start + all random bars
+      const waypoints = [
+        `${location.coords.latitude},${location.coords.longitude}`,
+        ...randomBars.map(bar => `${bar.lat},${bar.lon}`)
+      ].join('|');
+
+      const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${GEOAPIFY_API_KEY}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      console.log("Single route response:", data);
+
+      if (data.features && data.features.length > 0) {
+        const coordinates = data.features[0].geometry.coordinates;
+        const coords = coordinates.flat().map(([lon, lat]) => ({ 
+          latitude: lat, 
+          longitude: lon 
+        }));
+        
+        setRoutes([coords]); // Single route array
+      } else {
+        console.error("No route found");
+        setRoutes([]);
+      }
+    } catch (err) {
+      console.error("Single route fetch failed:", err);
+      setRoutes([]);
+    }
   };
 
-
-
-    const fetchMultiStopRoute = async () => {
-        if (!location || randomBars.length === 0) return;
-        const allRoutes = [];
-        const stops = [
-          { lat: location.coords.latitude, lon: location.coords.longitude },
-          ...randomBars,
-        ];
-
-        for (let i = 0; i < stops.length - 1; i++) {
-          const from = stops[i];
-          const to = stops[i + 1];
-          const routeUrl = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=walk&apiKey=${GEOAPIFY_API_KEY}`;
-          try {
-            const res = await fetch(routeUrl);
-            const data = await res.json();
-            if (data.features && data.features.length > 0) {
-              const coords = data.features[0].geometry.coordinates[0].map(
-                ([lon, lat]) => ({ latitude: lat, longitude: lon })
-              );
-              allRoutes.push(coords);
-            }
-          } catch (err) {
-            console.error("Route fetch failed:", err);
-          }
-        }
-
-        setRoutes(allRoutes);
-      };
-
   // Initial loading
-  if (!location) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Fetching location...</Text>
-      </View>
-    );
-  }
+if (!location) {
+  return (
+    <NoLocationComponent onRetry={fetchLocation} />
+  );
+}
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         <MapView
-        ref={mapRef}
-          provider={PROVIDER_GOOGLE}
+          ref={mapRef}
+          //userInterfaceStyle='dark'
           showsMyLocationButton={false}
           showsUserLocation
           style={{ flex: 1 }}
@@ -204,6 +227,7 @@ export default function MapComponent() {
         </TouchableOpacity>
 
         {/* Bottom panel with slider and refresh */}
+      </View>
         <BottomPanel
           radius={radius}
           setRadius={setRadius}
@@ -214,9 +238,12 @@ export default function MapComponent() {
           generateRandomBars={generateRandomBars}
           randomBars={randomBars}
           setRandomBars={setRandomBars}
-          fetchMultiStopRoute={fetchMultiStopRoute}
+          bottomSheetRef={bottomSheetRef}
+          setRoutes={setRoutes}
+          location={location}
+          fetchSingleRoute={fetchSingleRoute}
+          isLoading={isLoading}
         />
-      </View>
     </GestureHandlerRootView>
   );
 }

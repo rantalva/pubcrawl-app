@@ -2,29 +2,61 @@ import { View, Text, Pressable, Button } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState, useCallback, useMemo, useRef } from "react";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetView, BottomSheetFlashList } from '@gorhom/bottom-sheet';
 import { styles } from "../styles/styles";
+import { Linking, Alert} from 'react-native';
+import BottomSheet, { BottomSheetView, BottomSheetFlashList } from '@gorhom/bottom-sheet';
+
 
 export default function BottomPanelButtonsComponent({
     radius,
     setRadius,
-    refreshLocation,
     bars,
     selectedCount,
     setSelectedCount,
     generateRandomBars,
     randomBars,
+    handleClosePress,
     handleCollapsePress,
     handleOpenPress,
     setRandomBars,
-    fetchMultiStopRoute
+    setRoutes,
+    location,
+    fetchSingleRoute,
+    isLoading,
+    keyExtractor,
+    renderItem
 }) {
     const [pickerVisible, setPickerVisible] = useState(false);
+
+    const openInMaps = () => {
+      if (!randomBars || randomBars.length === 0) {
+        Alert.alert("No bars selected");
+        return;
+      }
+
+      if (!location) {
+        Alert.alert("Location not available");
+        return;
+      }
+
+      const origin = `${location.coords.latitude},${location.coords.longitude}`;
+
+      const destination = `${randomBars[randomBars.length - 1].lat},${randomBars[randomBars.length - 1].lon}`;
+
+      const waypoints = randomBars
+        .slice(0, randomBars.length - 1) // all except last bar
+        .map((bar) => `${bar.lat},${bar.lon}`)
+        .join('|');
+
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=walking${
+        waypoints ? `&waypoints=${waypoints}` : ''
+      }`;
+
+      Linking.openURL(url);
+    };
+
     return (
       <View>
-        <Button onPress={handleCollapsePress} title="Close" />
-        <Button onPress={handleOpenPress} title="Open" />
          <Text>Found {bars.length} from radius: {radius} m</Text>
        <View>
           <Slider
@@ -70,19 +102,6 @@ export default function BottomPanelButtonsComponent({
         </>
       )}
 
-      {/* Refresh Location */}
-      <Pressable
-        onPress={refreshLocation}
-        style={{
-            marginTop: 10,
-            backgroundColor: "#1E90FF",
-            padding: 10,
-            borderRadius: 8,
-            alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "#fff", fontWeight: "bold" }}>Refresh Location</Text>
-      </Pressable>
         <Pressable
           onPress={async () => {await generateRandomBars(); handleOpenPress();}} // new method 
           style={{
@@ -94,17 +113,56 @@ export default function BottomPanelButtonsComponent({
           }}
         >
           <Text style={{ color: "#fff", fontWeight: "bold" }}>
-            Select Random Bars
+            {isLoading ? "Loading..." : "Select Random bars"}
           </Text>
         </Pressable>
-        <Button
-        onPress={() => {setRandomBars([]); handleCollapsePress();}}
-        title="Empty bars"
+
+        <BottomSheetFlashList
+          data={randomBars}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          estimatedItemSize={50}
+          nestedScrollEnabled={true}
+          ListEmptyComponent={
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ color: '#666' }}>No bars selected yet</Text>
+              <Text style={{ color: '#999', fontSize: 12, marginTop: 5 }}>
+                Press "Select Random Bars" to get started
+              </Text>
+            </View>
+        }
         />
-        <Button 
-        onPress={fetchMultiStopRoute}
-        title='fetch route'
+
+      {randomBars.length > 0 && (
+        <>
+          <Button 
+            onPress={async () => { 
+              await fetchSingleRoute(); 
+              handleClosePress(); 
+            }}
+            title='Fetch route'
         />
+          <Pressable
+            onPress={openInMaps}
+            style={{
+              marginTop: 10,
+              backgroundColor: "green",
+              padding: 10,
+              borderRadius: 8,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              Open in Google Maps
+            </Text>
+          </Pressable>
+          <Button
+            onPress={() => {setRandomBars([]); handleCollapsePress(); setRoutes([]);}}
+            title="Empty bars"
+          />
+        </>
+      )}
+
       </View>
     )
   };
