@@ -151,5 +151,37 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+  },
+  googleMapsButton: {
+    marginTop: 10,
+    backgroundColor: "green",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  generatePubCrawlButton: {
+    marginTop: 10,
+    backgroundColor: "orange",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff", 
+    fontWeight: "bold"
+  },
+  togglePickerButton: {
+    marginTop: 10,
+    backgroundColor: "#1E90FF",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  emptyBarsButton: {
+    marginTop: 10,
+    backgroundColor: "#f80000ff",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
   }
 });

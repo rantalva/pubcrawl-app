@@ -84,15 +84,9 @@ export default function BottomPanelButtonsComponent({
       {/* Button to toggle Picker */}
       <Pressable
         onPress={() => setPickerVisible((prev) => !prev)}
-        style={{
-          marginTop: 10,
-          backgroundColor: "#1E90FF",
-          padding: 10,
-          borderRadius: 8,
-          alignItems: "center",
-        }}
+        style={styles.togglePickerButton}
       >
-        <Text style={{ color: "#fff", fontWeight: "bold" }}>
+        <Text style={styles.buttonText}>
           {pickerVisible ? "Hide Picker" : "Select Number of Bars"}
         </Text>
       </Pressable>
@@ -120,16 +114,10 @@ export default function BottomPanelButtonsComponent({
 
         <Pressable
           onPress={async () => {await generateRandomBars(); handleOpenPress();}} // new method 
-          style={{
-            marginTop: 10,
-            backgroundColor: "orange",
-            padding: 10,
-            borderRadius: 8,
-            alignItems: "center",
-          }}
+          style={styles.generatePubCrawlButton}
         >
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>
-            {isLoading ? "Loading..." : "Select Random bars"}
+          <Text style={styles.buttonText}>
+            {isLoading ? "Loading..." : "Generate pub crawl!"}
           </Text>
         </Pressable>
 
@@ -152,34 +140,34 @@ export default function BottomPanelButtonsComponent({
 
       {randomBars.length > 0 && (
         <>
-          <Button 
+          <Pressable
             onPress={async () => { 
               await fetchSingleRoute(); 
               handleClosePress(); 
             }}
-            title='Fetch route'
-        />
+          >
+            <Text style={styles.buttonText}>
+              Fetch route
+            </Text>
+          </Pressable>
           <Pressable
             onPress={openInMaps}
-            style={{
-              marginTop: 10,
-              backgroundColor: "green",
-              padding: 10,
-              borderRadius: 8,
-              alignItems: "center",
-            }}
+            style={styles.googleMapsButton}
           >
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+            <Text style={styles.buttonText}>
               Open in Google Maps
             </Text>
           </Pressable>
-          <Button
+          <Pressable
             onPress={() => {setRandomBars([]); handleCollapsePress(); setRoutes([]);}}
-            title="Empty bars"
-          />
+            style={styles.emptyBarsButton}
+          >
+            <Text style={styles.buttonText}>
+              Empty bars
+            </Text>
+          </Pressable>
         </>
       )}
-
       </View>
       </ScrollView>
     )
