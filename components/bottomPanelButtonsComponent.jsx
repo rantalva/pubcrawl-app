@@ -29,10 +29,10 @@ export default function BottomPanelButtonsComponent({
 
     const keyExtractor = (item) => item.id?.toString() ?? Math.random().toString
 
-    const renderItem = useCallback(({ item }) => { // rendering items in Bottomsheetflashlist
+    const renderItem = useCallback(({ item, index }) => { // rendering items in Bottomsheetflashlist
       return (
         <View key={item} style={styles.itemContainer}>
-          <Text>{item.name}</Text>
+          <Text>{index + 1}. {item.name}</Text>
         </View>
       );
     }, []);
