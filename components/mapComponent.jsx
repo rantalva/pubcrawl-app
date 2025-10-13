@@ -1,12 +1,13 @@
 import MapView, { Marker, Circle, PROVIDER_GOOGLE, Polyline, Polygon } from "react-native-maps";
 import { View, Text, Alert } from "react-native";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import * as Location from "expo-location";
 import BottomPanel from "./bottomPanelComponent";
 import NoLocationComponent from "./noLocationComponent";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import ThemeContext from "../Contexts/themeContext";
 import { styles } from "../styles/styles";
 
 
@@ -23,7 +24,7 @@ export default function MapComponent({ bottomSheetRef }) {
   const mapRef = useRef(null);
   const [routes, setRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const abortControllerRef = useRef(null);
+  const { isDarkMode } = useContext(ThemeContext);
 
     const goToUserLocation = () => {
     if (!location) return;
@@ -130,7 +131,7 @@ const generateRandomBars = useCallback(async () => {
   }, 0);
 }, [bars, selectedCount]);
 
-  const fetchSingleRoute = async (signal) => {
+  const fetchSingleRoute = async () => {
     if (!location || randomBars.length === 0) return Alert.alert("No bars selected for route");
 
     try {
@@ -177,7 +178,7 @@ if (!location) {
       <View style={{ flex: 1 }}>
         <MapView
           ref={mapRef}
-          //userInterfaceStyle='dark'
+          userInterfaceStyle={isDarkMode ? 'dark' : 'light'}
           showsMyLocationButton={false}
           showsUserLocation
           style={{ flex: 1 }}
@@ -198,16 +199,6 @@ if (!location) {
             strokeColor="rgba(0,0,255,0.5)"
             fillColor="rgba(0,0,255,0.2)"
           />
-          {/* Bars 
-          {bars.map((bar) => (
-            <Marker
-              key={bar.id}
-              coordinate={{ latitude: bar.lat, longitude: bar.lon }}
-              title={bar.name}
-              pinColor="orange"
-            />
-          ))} 
-            */}
 
             {/* Highlight random selected bars in orange */}
             {randomBars.map((bar) => (

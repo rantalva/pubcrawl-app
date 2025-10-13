@@ -1,6 +1,6 @@
 // components/MainMapScreen.js
 import { useRef, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import MapComponent from './mapComponent';
 
 export default function MainMapScreen({ route }) {

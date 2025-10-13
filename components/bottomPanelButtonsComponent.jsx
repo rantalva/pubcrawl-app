@@ -1,11 +1,12 @@
 import { View, Text, Pressable, Button } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import { styles } from "../styles/styles";
 import { Linking, Alert} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import { ScrollView } from "react-native-gesture-handler";
+import ThemeContext from "../Contexts/themeContext";
 
 
 export default function BottomPanelButtonsComponent({
@@ -26,16 +27,20 @@ export default function BottomPanelButtonsComponent({
     isLoading
 }) {
     const [pickerVisible, setPickerVisible] = useState(false);
+    const { isDarkMode } = useContext(ThemeContext);
 
     const keyExtractor = (item) => item.id?.toString() ?? Math.random().toString
 
     const renderItem = useCallback(({ item, index }) => { // rendering items in Bottomsheetflashlist
       return (
-        <View key={item} style={styles.itemContainer}>
-          <Text>{index + 1}. {item.name}</Text>
+        <View key={item} style={[
+          styles.itemContainer,
+          { backgroundColor: isDarkMode ? '#333' : '#eee' }
+        ]}>
+          <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>{index + 1}. {item.name}</Text>
         </View>
       );
-    }, []);
+    }, [isDarkMode]);
 
     const openInMaps = () => {
       if (!randomBars || randomBars.length === 0) {
@@ -67,7 +72,7 @@ export default function BottomPanelButtonsComponent({
     return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
       <View>
-         <Text>Found {bars.length} from radius: {radius} m</Text>
+         <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>Found {bars.length} from radius: {radius} m</Text>
        <View>
           <Slider
             style={{ width: "100%", height: 40 }}
@@ -77,10 +82,12 @@ export default function BottomPanelButtonsComponent({
             value={radius}
             onValueChange={setRadius}
             minimumTrackTintColor="#1E90FF"
-            maximumTrackTintColor="#000000"
+            maximumTrackTintColor={isDarkMode ? "#fff" : "#000000"}
           />
         </View>  
-      <Text>Selected amount of bars for pub crawl: {selectedCount} </Text>
+      <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>
+        Selected amount of bars for pub crawl: {selectedCount}
+      </Text>
       {/* Button to toggle Picker */}
       <Pressable
         onPress={() => setPickerVisible((prev) => !prev)}
@@ -145,6 +152,7 @@ export default function BottomPanelButtonsComponent({
               await fetchSingleRoute(); 
               handleClosePress(); 
             }}
+            style={styles.togglePickerButton}
           >
             <Text style={styles.buttonText}>
               Fetch route

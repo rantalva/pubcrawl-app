@@ -1,8 +1,9 @@
 import { View, Text} from "react-native";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useContext } from "react";
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import BottomPanelButtonsComponent from "./bottomPanelButtonsComponent";
 import { styles } from "../styles/styles";
+import ThemeContext from "../Contexts/themeContext";
 
 export default function BottomPanel({
   radius,
@@ -22,8 +23,7 @@ export default function BottomPanel({
   isLoading
 }) {
   const snapPoints = useMemo(() => ['5%', '25%', '35%', '85%'], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
-  
-
+  const { isDarkMode } = useContext(ThemeContext);
   const handleCollapsePress = () => bottomSheetRef.current.snapToIndex(1)
   const handleClosePress = () => bottomSheetRef.current.snapToIndex(0)
   const handleOpenPress = () => bottomSheetRef.current.expand()
@@ -33,8 +33,7 @@ export default function BottomPanel({
     console.log('handleSheetChanges', index);
   }, []);
 
-  return (
-        
+  return (   
       <BottomSheet
         ref={bottomSheetRef}
         onChange={handleSheetChanges}
@@ -43,9 +42,21 @@ export default function BottomPanel({
         enableContentPanningGesture={true}
         enableHandlePanningGesture={true}
         keyboardBehavior="interactive"
+        backgroundStyle={{
+          backgroundColor: isDarkMode ? '#1e1e1e' : '#fff'
+        }}
+        handleStyle={{
+          backgroundColor: isDarkMode ? '#333' : '#fff'
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: isDarkMode ? '#666' : '#ccc'
+        }}
         >
           {/*Commenting fucking sucks in react */}
-        <BottomSheetView style={styles.contentContainer}>
+        <BottomSheetView style={[
+          styles.contentContainer,
+          { backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }
+          ]}>
         <BottomPanelButtonsComponent 
           radius={radius}
           setRadius={setRadius}
