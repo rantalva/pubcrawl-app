@@ -74,6 +74,18 @@ export default function BottomPanelButtonsComponent({
       <View>
          <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>Found {bars.length} from radius: {radius} m</Text>
        <View>
+
+        {/* Warning text when selected amount exceeds found bars */}
+       {selectedCount > bars.length && bars.length > 0 && (
+         <Text style={{ 
+           color: '#ff6b6b', 
+           fontStyle: 'italic',
+           marginBottom: 10
+         }}>
+           Note: Only {bars.length} bars found (less than selected {selectedCount})
+         </Text>
+       )}
+
           <Slider
             style={{ width: "100%", height: 40 }}
             minimumValue={500}
@@ -127,6 +139,19 @@ export default function BottomPanelButtonsComponent({
             {isLoading ? "Loading..." : "Generate pub crawl!"}
           </Text>
         </Pressable>
+
+        {/* Additional warning when generating with limited bars */}
+        {selectedCount > bars.length && bars.length > 0 && (
+          <Text style={{ 
+            color: '#ffa500', 
+            fontSize: 12,
+            textAlign: 'center',
+            marginTop: 5,
+            fontStyle: 'italic'
+          }}>
+            Only {bars.length} bars will be used for the crawl
+          </Text>
+        )}
 
         <FlashList
           data={randomBars}
