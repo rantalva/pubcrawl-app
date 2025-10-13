@@ -28,15 +28,9 @@ export default function BottomPanel({
   const handleClosePress = () => bottomSheetRef.current.snapToIndex(0)
   const handleOpenPress = () => bottomSheetRef.current.expand()
 
-  // callbacks
-  const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-
   return (   
       <BottomSheet
         ref={bottomSheetRef}
-        onChange={handleSheetChanges}
         snapPoints={snapPoints}
         index={1}
         enableContentPanningGesture={true}
