@@ -28,11 +28,23 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: 30,
   },
-  picker: {
-    height: 150, 
-    width: "100%"
+  pickerView: {
+    height: 120, 
+    marginTop: 10, 
+    backgroundColor: '#f5f5f5', 
+    borderRadius: 8,
+    overflow: 'hidden' 
   },
-    itemContainer: {
+  picker: {
+    width: "100%", 
+    height: 120, 
+    marginTop: -50
+  },
+  pickerItem: {
+    color: 'black', 
+    fontSize: 18
+  },
+  itemContainer: {
     padding: 6,
     margin: 6,
     backgroundColor: "#eee",
@@ -49,5 +61,95 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
+  }, 
+   customMarker: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#FFD700',
   },
+  iconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  stepsContainer: {
+    width: '100%',
+    marginBottom: 32,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  stepNumber: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  stepNumberText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  stepText: {
+    fontSize: 14,
+    flex: 1,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 25,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  retryButtonText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  containerNoLocation: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  }
 });

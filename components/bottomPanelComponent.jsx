@@ -1,11 +1,8 @@
-import { View, Text, Pressable } from "react-native";
-import Slider from "@react-native-community/slider";
-import { Picker } from "@react-native-picker/picker";
-import React, { useState, useCallback, useMemo, useRef } from "react";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetView, BottomSheetFlashList } from '@gorhom/bottom-sheet';
-import { styles } from "../styles/styles";
+import { View, Text} from "react-native";
+import { useCallback, useMemo } from "react";
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import BottomPanelButtonsComponent from "./bottomPanelButtonsComponent";
+import { styles } from "../styles/styles";
 
 export default function BottomPanel({
   radius,
@@ -24,10 +21,10 @@ export default function BottomPanel({
   fetchSingleRoute,
   isLoading
 }) {
-  const snapPoints = useMemo(() => ['5%', '40%','85%',], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
-  const keyExtractor = (item, index) => item.id?.toString() ?? index.toString()
+  const snapPoints = useMemo(() => ['5%', '25%', '35%', '85%'], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
+  
 
-  const handleCollapsePress = () => bottomSheetRef.current.snapToIndex(3)
+  const handleCollapsePress = () => bottomSheetRef.current.snapToIndex(1)
   const handleClosePress = () => bottomSheetRef.current.snapToIndex(0)
   const handleOpenPress = () => bottomSheetRef.current.expand()
 
@@ -36,21 +33,13 @@ export default function BottomPanel({
     console.log('handleSheetChanges', index);
   }, []);
 
-    const renderItem = useCallback(({ item }) => { // rendering items in Bottomsheetflashlist
-    return (
-      <View key={item} style={styles.itemContainer}>
-        <Text>{item.name}</Text>
-      </View>
-    );
-  }, []);
-
   return (
         
       <BottomSheet
         ref={bottomSheetRef}
         onChange={handleSheetChanges}
         snapPoints={snapPoints}
-        index={3}
+        index={1}
         enableContentPanningGesture={true}
         enableHandlePanningGesture={true}
         keyboardBehavior="interactive"
@@ -75,8 +64,6 @@ export default function BottomPanel({
           location={location}
           fetchSingleRoute={fetchSingleRoute}
           isLoading={isLoading}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
         />
         </BottomSheetView>
       </BottomSheet>

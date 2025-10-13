@@ -1,10 +1,11 @@
 import { View, Text, Pressable, Button } from "react-native";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback } from "react";
 import { styles } from "../styles/styles";
 import { Linking, Alert} from 'react-native';
-import BottomSheet, { BottomSheetView, BottomSheetFlashList } from '@gorhom/bottom-sheet';
+import { FlashList } from "@shopify/flash-list";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 export default function BottomPanelButtonsComponent({
@@ -22,11 +23,19 @@ export default function BottomPanelButtonsComponent({
     setRoutes,
     location,
     fetchSingleRoute,
-    isLoading,
-    keyExtractor,
-    renderItem
+    isLoading
 }) {
     const [pickerVisible, setPickerVisible] = useState(false);
+
+    const keyExtractor = (item) => item.id?.toString() ?? Math.random().toString
+
+    const renderItem = useCallback(({ item }) => { // rendering items in Bottomsheetflashlist
+      return (
+        <View key={item} style={styles.itemContainer}>
+          <Text>{item.name}</Text>
+        </View>
+      );
+    }, []);
 
     const openInMaps = () => {
       if (!randomBars || randomBars.length === 0) {
@@ -56,6 +65,7 @@ export default function BottomPanelButtonsComponent({
     };
 
     return (
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
       <View>
          <Text>Found {bars.length} from radius: {radius} m</Text>
        <View>
@@ -87,20 +97,26 @@ export default function BottomPanelButtonsComponent({
         </Text>
       </Pressable>
 
-      {/* Conditional Picker */}
-      {pickerVisible && (
-        <>
-          <Picker
-            style={styles.picker}
-            selectedValue={selectedCount}
-            onValueChange={(itemValue) => setSelectedCount(itemValue)}
-          >
-            {[3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-              <Picker.Item key={num} label={num.toString()} value={num} />
-            ))}
-          </Picker>
-        </>
-      )}
+          {/* Conditional Picker */}
+          {pickerVisible && (
+            <View style={styles.pickerView}>
+              <Picker
+                selectedValue={selectedCount}
+                onValueChange={(itemValue) => setSelectedCount(itemValue)}
+                style={styles.picker}
+                itemStyle={styles.pickerItem}
+                mode="dropdown" // This makes it work better on Android
+              >
+                {[3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                  <Picker.Item 
+                    key={num} 
+                    label={num.toString()} 
+                    value={num} 
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
 
         <Pressable
           onPress={async () => {await generateRandomBars(); handleOpenPress();}} // new method 
@@ -117,14 +133,15 @@ export default function BottomPanelButtonsComponent({
           </Text>
         </Pressable>
 
-        <BottomSheetFlashList
+        <FlashList
           data={randomBars}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           estimatedItemSize={50}
           nestedScrollEnabled={true}
+          scrollEnabled={false}
           ListEmptyComponent={
-            <View style={{ padding: 20, alignItems: 'center' }}>
+            <View style={{ padding: 1, alignItems: 'center' }}>
               <Text style={{ color: '#666' }}>No bars selected yet</Text>
               <Text style={{ color: '#999', fontSize: 12, marginTop: 5 }}>
                 Press "Select Random Bars" to get started
@@ -164,5 +181,6 @@ export default function BottomPanelButtonsComponent({
       )}
 
       </View>
+      </ScrollView>
     )
   };

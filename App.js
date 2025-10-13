@@ -32,7 +32,7 @@ const bottomSheetRef = useRef(); // https://www.youtube.com/watch?v=oIEykI5oagI&
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.navigate('Home', { expandSheet: false }); // 👈 Collapse BottomSheet
+              navigation.navigate('Home', { expandSheet: false });
             },
           })}
         />

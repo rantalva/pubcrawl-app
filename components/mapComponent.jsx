@@ -6,7 +6,7 @@ import BottomPanel from "./bottomPanelComponent";
 import NoLocationComponent from "./noLocationComponent";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Or any icon library
+import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../styles/styles";
 
 
@@ -97,35 +97,39 @@ export default function MapComponent({ bottomSheetRef }) {
   }, [radius, location]);
   
 
-    const generateRandomBars = useCallback(async () => {
+const generateRandomBars = useCallback(async () => {
+  // Quick validation
   if (bars.length === 0 || isLoading) {
-    console.log('Skipping - already loading or no bars');
     return;
   }
 
-  // Cancel previous API call
-  if (abortControllerRef.current) {
-    abortControllerRef.current.abort();
-  }
-
+  // Set loading immediately
   setIsLoading(true);
-  
-  try {
-    const shuffled = [...bars].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, Math.min(selectedCount, bars.length));
-    setRandomBars(selected);
-    
-  } catch (error) {
-    if (error.name !== 'AbortError') {
-      console.error('Error generating bars:', error);
-      Alert.alert('Error', 'Failed to generate bars');
-    }
-  } finally {
-    setIsLoading(false);
-  }
-}, [bars, selectedCount, isLoading]);
 
-  // Alternative: Fetch single route for all stops (more efficient)
+  // Use setTimeout to break the render cycle
+  setTimeout(() => {
+    try {
+      const shuffled = [...bars];
+      const selected = [];
+      
+      // Fisher-Yates shuffle for better randomness
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      
+      // Take first n items
+      const result = shuffled.slice(0, Math.min(selectedCount, shuffled.length));
+      setRandomBars(result);
+      
+    } catch (error) {
+      console.error('Random bar selection error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, 0);
+}, [bars, selectedCount]);
+
   const fetchSingleRoute = async (signal) => {
     if (!location || randomBars.length === 0) return Alert.alert("No bars selected for route");
 
@@ -207,7 +211,11 @@ if (!location) {
 
             {/* Highlight random selected bars in orange */}
             {randomBars.map((bar) => (
-            <Marker key={"selected-" + bar.id} coordinate={{ latitude: bar.lat, longitude: bar.lon }} title={bar.name} pinColor="orange" />
+            <Marker key={"selected-" + bar.id} coordinate={{ latitude: bar.lat, longitude: bar.lon }} title={bar.name}>
+              <View style={styles.customMarker}>
+                <Ionicons name="beer" size={20} color="#e6cb38ff" />
+              </View>
+            </Marker>
           ))}
 
           {/* Draw all routes */}
