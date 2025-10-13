@@ -77,11 +77,7 @@ export default function BottomPanelButtonsComponent({
 
         {/* Warning text when selected amount exceeds found bars */}
        {selectedCount > bars.length && bars.length > 0 && (
-         <Text style={{ 
-           color: '#ff6b6b', 
-           fontStyle: 'italic',
-           marginBottom: 10
-         }}>
+         <Text style={styles.warningText}>
            Note: Only {bars.length} bars found (less than selected {selectedCount})
          </Text>
        )}
@@ -142,13 +138,7 @@ export default function BottomPanelButtonsComponent({
 
         {/* Additional warning when generating with limited bars */}
         {selectedCount > bars.length && bars.length > 0 && (
-          <Text style={{ 
-            color: '#ffa500', 
-            fontSize: 12,
-            textAlign: 'center',
-            marginTop: 5,
-            fontStyle: 'italic'
-          }}>
+          <Text style={styles.warningText}>
             Only {bars.length} bars will be used for the crawl
           </Text>
         )}

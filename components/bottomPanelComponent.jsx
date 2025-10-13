@@ -22,11 +22,11 @@ export default function BottomPanel({
   fetchSingleRoute,
   isLoading
 }) {
-  const snapPoints = useMemo(() => ['5%', '25%', '35%', '85%'], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
+  const snapPoints = useMemo(() => ['5%', '25%', '35%', '85%', '100%'], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
   const { isDarkMode } = useContext(ThemeContext);
   const handleCollapsePress = () => bottomSheetRef.current.snapToIndex(1)
   const handleClosePress = () => bottomSheetRef.current.snapToIndex(0)
-  const handleOpenPress = () => bottomSheetRef.current.expand()
+  const handleOpenPress = () => bottomSheetRef.current.snapToIndex(4)
 
   return (   
       <BottomSheet

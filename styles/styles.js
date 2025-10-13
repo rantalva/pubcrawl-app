@@ -183,5 +183,11 @@ export const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: "center",
+  },
+  warningText: {
+    color: '#ff6b6b', 
+    fontStyle: 'italic',
+    marginTop: 10,
+    marginBottom: 10
   }
 });

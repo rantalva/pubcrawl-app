@@ -145,8 +145,6 @@ const generateRandomBars = useCallback(async () => {
       
       const response = await fetch(url);
       const data = await response.json();
-      
-      console.log("Single route response:", data);
 
       if (data.features && data.features.length > 0) {
         const coordinates = data.features[0].geometry.coordinates;
