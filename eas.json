@@ -12,6 +12,9 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_KEY": "920f233ab9d64db6b4041f7b85d94286"
       }
     },
     "production": {
