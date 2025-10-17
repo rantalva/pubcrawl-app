@@ -1,5 +1,4 @@
-import { View, Text} from "react-native";
-import { useCallback, useMemo, useContext } from "react";
+import { useMemo, useContext } from "react";
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import BottomPanelButtonsComponent from "./bottomPanelButtonsComponent";
 import { styles } from "../styles/styles";

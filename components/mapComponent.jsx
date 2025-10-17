@@ -1,5 +1,5 @@
-import MapView, { Marker, Circle, PROVIDER_GOOGLE, Polyline, Polygon } from "react-native-maps";
-import { View, Text, Alert } from "react-native";
+import MapView, { Marker, Circle, Polyline, } from "react-native-maps";
+import { View, Alert } from "react-native";
 import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import * as Location from "expo-location";
 import BottomPanel from "./bottomPanelComponent";
@@ -10,9 +10,8 @@ import { Ionicons } from "@expo/vector-icons";
 import ThemeContext from "../Contexts/themeContext";
 import { styles } from "../styles/styles";
 
-
-const GEOAPIFY_API_KEY = 'c14486c8b8eb431184047104880673b8'
 const categories = 'catering.bar,catering.pub,catering.biergarten,catering.taproom'
+const apiKey = process.env.EXPO_PUBLIC_API_KEY;
 
 export default function MapComponent({ bottomSheetRef }) {
   const [location, setLocation] = useState(null);
@@ -27,7 +26,7 @@ export default function MapComponent({ bottomSheetRef }) {
   const { isDarkMode } = useContext(ThemeContext);
 
     const goToUserLocation = () => {
-    if (!location) return;
+    if (!location) return Alert.alert("No location available!");;
 
     mapRef.current.animateToRegion(
       {
@@ -62,7 +61,7 @@ export default function MapComponent({ bottomSheetRef }) {
     const lat = location.coords.latitude;
     const lon = location.coords.longitude;
 
-    const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&apiKey=${GEOAPIFY_API_KEY}`;
+    const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&apiKey=${apiKey}`;
 
     try {
       const response = await fetch(url);
@@ -113,7 +112,7 @@ const generateRandomBars = useCallback(async () => {
       const shuffled = [...bars];
       const selected = [];
       
-      // Fisher-Yates shuffle for better randomness
+      // Fisher-Yates shuffle 
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -141,7 +140,7 @@ const generateRandomBars = useCallback(async () => {
         ...randomBars.map(bar => `${bar.lat},${bar.lon}`)
       ].join('|');
 
-      const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${GEOAPIFY_API_KEY}`;
+      const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${apiKey}`;
       
       const response = await fetch(url);
       const data = await response.json();
