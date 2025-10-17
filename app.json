@@ -15,14 +15,11 @@
     "ios": {
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,
-      "icon": {
-        "dark": "./assets/icon.png",
-        "light": "./assets/icon.png"
-      },
       "bundleIdentifier": "com.anonymous.pubcrawlapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "icon": "./assets/icon.png"
     },
     "android": {
       "userInterfaceStyle": "automatic",
@@ -34,7 +31,7 @@
       "package": "com.anonymous.pubcrawlapp"
     },
     "web": {
-      "favicon": "./assets/icon.png"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
