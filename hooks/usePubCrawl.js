@@ -3,7 +3,6 @@ import { Alert } from 'react-native';
 
 const apiKey = process.env.EXPO_PUBLIC_API_KEY;
 
-// This hook manages the logic for selection and routing
 export default function usePubCrawl(bars, location, selectedCount, isBarsLoading) {
   const [randomBars, setRandomBars] = useState([]);
   const [routes, setRoutes] = useState([]);
@@ -11,9 +10,7 @@ export default function usePubCrawl(bars, location, selectedCount, isBarsLoading
   const [isRouting, setIsRouting] = useState(false);
   const [error, setError] = useState(null);
 
-  // 1. Random Bar Generation Logic
   const generateRandomBars = useCallback(async () => {
-    // Prevent generation if bars are still loading or none are found
     if (bars.length === 0 || isBarsLoading || isGenerating) {
       if (bars.length === 0 && !isBarsLoading) Alert.alert("No bars found!", "Try increasing the search radius.");
       return;
@@ -21,9 +18,8 @@ export default function usePubCrawl(bars, location, selectedCount, isBarsLoading
 
     setIsGenerating(true);
     setError(null);
-    setRoutes([]); // Clear old routes when generating new bars
+    setRoutes([]);
 
-    // Use a setTimeout to allow the UI to update the 'Generating...' text
     setTimeout(() => {
       try {
         const shuffled = [...bars];
@@ -34,7 +30,6 @@ export default function usePubCrawl(bars, location, selectedCount, isBarsLoading
           [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
         
-        // Select the requested number of bars
         const result = shuffled.slice(0, Math.min(selectedCount, shuffled.length));
         setRandomBars(result);
         
@@ -45,20 +40,17 @@ export default function usePubCrawl(bars, location, selectedCount, isBarsLoading
         setIsGenerating(false);
       }
     }, 300);
-  }, [bars, selectedCount, isBarsLoading, isGenerating]); // Dependencies
+  }, [bars, selectedCount, isBarsLoading, isGenerating]);
 
-  // 2. Route Fetching Logic
   const fetchSingleRoute = useCallback(async () => {
     if (!location) return Alert.alert("Location Error", "Your location is not available.");
     if (randomBars.length === 0) return Alert.alert("No bars selected", "Please generate a pub crawl first.");
     
-    // Reset routes and start loading state
     setRoutes([]);
     setIsRouting(true);
     setError(null);
 
     try {
-      // Create waypoints string: user location + all random bars
       const waypoints = [
         `${location.coords.latitude},${location.coords.longitude}`,
         ...randomBars.map(bar => `${bar.lat},${bar.lon}`)
@@ -70,7 +62,6 @@ export default function usePubCrawl(bars, location, selectedCount, isBarsLoading
       const data = await response.json();
       
       if (data.features && data.features.length > 0) {
-        // Geoapify returns [lon, lat], we map it to {latitude, longitude}
         const coordinates = data.features[0].geometry.coordinates;
         const coords = coordinates.flat().map(([lon, lat]) => ({ 
           latitude: lat, 
@@ -90,17 +81,16 @@ export default function usePubCrawl(bars, location, selectedCount, isBarsLoading
     } finally {
       setIsRouting(false);
     }
-  }, [location, randomBars]); // Dependencies
+  }, [location, randomBars]);
 
-  // 3. Return all state and actions the component needs
   return { 
     randomBars, 
     routes, 
     isGenerating, 
     isRouting,
     pubCrawlError: error,
-    setRandomBars, // Allow clearing the list
-    setRoutes, // Allow clearing the route lines
+    setRandomBars,
+    setRoutes,
     generateRandomBars, 
     fetchSingleRoute 
   };
