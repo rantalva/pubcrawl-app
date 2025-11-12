@@ -25,7 +25,8 @@ export default function BottomPanelButtonsComponent({
     location,
     fetchSingleRoute,
     isLoading,
-    isRouting
+    isRouting,
+    isGenerating
 }) {
     const [pickerVisible, setPickerVisible] = useState(false);
     const { isDarkMode } = useContext(ThemeContext);
@@ -133,9 +134,10 @@ export default function BottomPanelButtonsComponent({
         <Pressable
           onPress={async () => {await generateRandomBars(); handleOpenPress();}}
           style={styles.generatePubCrawlButton}
+          disabled={isLoading || isGenerating}
         >
           <Text style={styles.buttonText}>
-            {isLoading ? "Loading..." : "Generate pub crawl!"}
+            {isGenerating ? "Loading..." : "Generate pub crawl!"}
           </Text>
         </Pressable>
 

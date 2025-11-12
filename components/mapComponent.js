@@ -9,25 +9,33 @@ import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ThemeContext from "../Contexts/themeContext";
 import { styles } from "../styles/styles";
+import useLocation from "../hooks/useLocation";
+import useBars from "../hooks/useFetchBars";
+import usePubCrawl from "../hooks/usePubCrawl";
 
-const categories = 'catering.bar,catering.pub,catering.biergarten,catering.taproom'
-const apiKey = process.env.EXPO_PUBLIC_API_KEY;
+//const apiKey = process.env.EXPO_PUBLIC_API_KEY;
 
 export default function MapComponent({ bottomSheetRef }) {
-  const [location, setLocation] = useState(null);
+  const { location, isLoading: isLocationLoading, error: locationError, fetchLocation } = useLocation();
   const [radius, setRadius] = useState(1000); // meters
-  const [bars, setBars] = useState([]);
-  const timeoutRef = useRef(null);
   const [selectedCount, setSelectedCount] = useState(3);
-  const [randomBars, setRandomBars] = useState([]);
   const mapRef = useRef(null);
-  const [routes, setRoutes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRouting, setIsRouting] = useState(false);
-  const { isDarkMode } = useContext(ThemeContext);
+  const { bars, isLoading: isBarsLoading, error: barsError } = useBars(location, radius);
+  const {isDarkMode} = useContext(ThemeContext)
+  const { 
+      randomBars,
+      routes,
+      isGenerating, 
+      isRouting,
+      pubCrawlError,
+      setRandomBars,
+      setRoutes,
+      generateRandomBars,
+      fetchSingleRoute
+    } = usePubCrawl(bars, location, selectedCount, isBarsLoading);
 
-    const goToUserLocation = () => {
-    if (!location) return Alert.alert("No location available!");;
+  const goToUserLocation = () => {
+  if (!location) return Alert.alert("No location available!");;
 
     mapRef.current.animateToRegion(
       {
@@ -38,136 +46,16 @@ export default function MapComponent({ bottomSheetRef }) {
       },
       1000
     );
-  };
+  }; 
 
-  // Fetch user location
-  async function fetchLocation() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("No permission to get location");
-      return;
-    }
-    let loc = await Location.getCurrentPositionAsync({});
-    setLocation(loc);
-  }
-
-  useEffect(() => {
-    fetchLocation();
-  }, []);
-
-  // Fetch bars from Geoapify
-  const fetchBars = async () => {
-    if (!location) return;
-
-    const lat = location.coords.latitude;
-    const lon = location.coords.longitude;
-
-    const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&apiKey=${apiKey}`;
-
-    try {
-      setIsLoading(true)
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.features) {
-        const results = data.features.map((place) => ({
-          id: place.properties.place_id,
-          lat: place.properties.lat,
-          lon: place.properties.lon,
-          name: place.properties.name || "Unnamed Bar",
-        }));
-        setBars(results);
-        setIsLoading(false)
-      } else {
-        console.error("Geoapify error:", data);
-        setBars([]);
-      }
-    } catch (error) {
-      console.error("Error fetching bars:", error);
-    }
-  };
-
-  // Debounce fetch when radius changes
-  useEffect(() => {
-    if (!location) return;
-
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-    timeoutRef.current = setTimeout(() => {
-      fetchBars();
-    }, 200); // 200ms debounce
-
-  }, [radius, location]);
-  
-
-const generateRandomBars = useCallback(async () => {
-  if (bars.length === 0 || isLoading) {
-    return;
-  }
-
-  setIsLoading(true);
-
-  setTimeout(() => {
-    try {
-      const shuffled = [...bars];
-      const selected = [];
-      
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      
-      const result = shuffled.slice(0, Math.min(selectedCount, shuffled.length));
-      setRandomBars(result);
-      
-    } catch (error) {
-      console.error('Random bar selection error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, 300);
-}, [bars, selectedCount]);
-
-  const fetchSingleRoute = async () => {
-    if (!location || randomBars.length === 0) return Alert.alert("No bars selected for route");
-
-    try {
-      // Create waypoints string: start + all random bars
-      setIsRouting(true)
-      const waypoints = [
-        `${location.coords.latitude},${location.coords.longitude}`,
-        ...randomBars.map(bar => `${bar.lat},${bar.lon}`)
-      ].join('|');
-      
-      const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${apiKey}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.features && data.features.length > 0) {
-        const coordinates = data.features[0].geometry.coordinates;
-        const coords = coordinates.flat().map(([lon, lat]) => ({ 
-          latitude: lat, 
-          longitude: lon 
-        }));
-        setRoutes([coords]);
-        setIsRouting(false)
-        setTimeout(300)
-      } else {
-        Alert.alert("No route was found")
-        setRoutes([]);
-      }
-    } catch (err) {
-        Alert.alert("No route was found", err)
-        setRoutes([]);
-    }
-  };
-
-  // Initial loading
-if (!location) {
+if (isLocationLoading) {
   return (
     <NoLocationComponent onRetry={fetchLocation} />
   );
+}
+
+if (!location || locationError) {
+  return <NoLocationComponent onRetry={fetchLocation} />
 }
 
   return (
@@ -238,8 +126,9 @@ if (!location) {
           setRoutes={setRoutes}
           location={location}
           fetchSingleRoute={fetchSingleRoute}
-          isLoading={isLoading}
+          isLoading={isBarsLoading}
           isRouting={isRouting}
+          isGenerating={isGenerating}
         />
     </GestureHandlerRootView>
   );
