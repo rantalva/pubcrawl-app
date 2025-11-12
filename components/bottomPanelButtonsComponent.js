@@ -24,7 +24,8 @@ export default function BottomPanelButtonsComponent({
     setRoutes,
     location,
     fetchSingleRoute,
-    isLoading
+    isLoading,
+    isRouting
 }) {
     const [pickerVisible, setPickerVisible] = useState(false);
     const { isDarkMode } = useContext(ThemeContext);
@@ -64,7 +65,7 @@ export default function BottomPanelButtonsComponent({
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=walking${
       waypoints ? `&waypoints=${waypoints}` : ''
     }`;
-
+    // in URL waypoints are either waypoints if waypoints is true or empty string ' '
     Linking.openURL(url).catch((err) => {
       console.error('Failed to open Google Maps', err);
       Alert.alert('Error', 'Could not open Google Maps.');
@@ -116,7 +117,7 @@ export default function BottomPanelButtonsComponent({
                 onValueChange={(itemValue) => setSelectedCount(itemValue)}
                 style={styles.picker}
                 itemStyle={styles.pickerItem}
-                mode="dropdown" // This makes it work better on Android
+                mode="dropdown" // Android noob
               >
                 {[3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                   <Picker.Item 
@@ -130,7 +131,7 @@ export default function BottomPanelButtonsComponent({
           )}
 
         <Pressable
-          onPress={async () => {await generateRandomBars(); handleOpenPress();}} // new method 
+          onPress={async () => {await generateRandomBars(); handleOpenPress();}}
           style={styles.generatePubCrawlButton}
         >
           <Text style={styles.buttonText}>
@@ -172,7 +173,7 @@ export default function BottomPanelButtonsComponent({
             style={styles.togglePickerButton}
           >
             <Text style={styles.buttonText}>
-              {isLoading ? "Loading..." : "Fetch route"}
+              {isRouting ? "Loading..." : "Fetch route"}
             </Text>
           </Pressable>
           <Pressable

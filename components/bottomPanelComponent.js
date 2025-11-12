@@ -19,7 +19,8 @@ export default function BottomPanel({
   setRoutes,
   location,
   fetchSingleRoute,
-  isLoading
+  isLoading,
+  isRouting
 }) {
   const snapPoints = useMemo(() => ['5%', '25%', '35%', '85%', '100%'], []) // useMemo is used for the bottomSheet to not stick, snappoints are where the bottomsheet snaps to
   const { isDarkMode } = useContext(ThemeContext);
@@ -68,6 +69,7 @@ export default function BottomPanel({
           location={location}
           fetchSingleRoute={fetchSingleRoute}
           isLoading={isLoading}
+          isRouting={isRouting}
         />
         </BottomSheetView>
       </BottomSheet>

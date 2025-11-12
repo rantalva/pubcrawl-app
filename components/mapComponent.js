@@ -23,6 +23,7 @@ export default function MapComponent({ bottomSheetRef }) {
   const mapRef = useRef(null);
   const [routes, setRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRouting, setIsRouting] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
 
     const goToUserLocation = () => {
@@ -132,17 +133,17 @@ const generateRandomBars = useCallback(async () => {
 
     try {
       // Create waypoints string: start + all random bars
-      setIsLoading(true)
+      setIsRouting(true)
       const waypoints = [
         `${location.coords.latitude},${location.coords.longitude}`,
         ...randomBars.map(bar => `${bar.lat},${bar.lon}`)
       ].join('|');
-
+      
       const url = `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=walk&apiKey=${apiKey}`;
       
       const response = await fetch(url);
       const data = await response.json();
-
+      
       if (data.features && data.features.length > 0) {
         const coordinates = data.features[0].geometry.coordinates;
         const coords = coordinates.flat().map(([lon, lat]) => ({ 
@@ -150,7 +151,8 @@ const generateRandomBars = useCallback(async () => {
           longitude: lon 
         }));
         setRoutes([coords]);
-        setIsLoading(false)
+        setIsRouting(false)
+        setTimeout(300)
       } else {
         Alert.alert("No route was found")
         setRoutes([]);
@@ -237,6 +239,7 @@ if (!location) {
           location={location}
           fetchSingleRoute={fetchSingleRoute}
           isLoading={isLoading}
+          isRouting={isRouting}
         />
     </GestureHandlerRootView>
   );
