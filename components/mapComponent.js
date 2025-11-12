@@ -64,6 +64,7 @@ export default function MapComponent({ bottomSheetRef }) {
     const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&apiKey=${apiKey}`;
 
     try {
+      setIsLoading(true)
       const response = await fetch(url);
       const data = await response.json();
 
@@ -75,6 +76,7 @@ export default function MapComponent({ bottomSheetRef }) {
           name: place.properties.name || "Unnamed Bar",
         }));
         setBars(results);
+        setIsLoading(false)
       } else {
         console.error("Geoapify error:", data);
         setBars([]);
@@ -98,27 +100,22 @@ export default function MapComponent({ bottomSheetRef }) {
   
 
 const generateRandomBars = useCallback(async () => {
-  // Quick validation
   if (bars.length === 0 || isLoading) {
     return;
   }
 
-  // Set loading immediately
   setIsLoading(true);
 
-  // Use setTimeout to break the render cycle
   setTimeout(() => {
     try {
       const shuffled = [...bars];
       const selected = [];
       
-      // Fisher-Yates shuffle 
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
       
-      // Take first n items
       const result = shuffled.slice(0, Math.min(selectedCount, shuffled.length));
       setRandomBars(result);
       
@@ -127,7 +124,7 @@ const generateRandomBars = useCallback(async () => {
     } finally {
       setIsLoading(false);
     }
-  }, 0);
+  }, 300);
 }, [bars, selectedCount]);
 
   const fetchSingleRoute = async () => {
@@ -135,6 +132,7 @@ const generateRandomBars = useCallback(async () => {
 
     try {
       // Create waypoints string: start + all random bars
+      setIsLoading(true)
       const waypoints = [
         `${location.coords.latitude},${location.coords.longitude}`,
         ...randomBars.map(bar => `${bar.lat},${bar.lon}`)
@@ -151,15 +149,15 @@ const generateRandomBars = useCallback(async () => {
           latitude: lat, 
           longitude: lon 
         }));
-        
-        setRoutes([coords]); // Single route array
+        setRoutes([coords]);
+        setIsLoading(false)
       } else {
-        console.error("No route found");
+        Alert.alert("No route was found")
         setRoutes([]);
       }
     } catch (err) {
-      console.error("Single route fetch failed:", err);
-      setRoutes([]);
+        Alert.alert("No route was found", err)
+        setRoutes([]);
     }
   };
 

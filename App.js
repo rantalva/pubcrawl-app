@@ -49,6 +49,10 @@ export default function App() {
     borderTopColor: isDarkMode ? '#333' : '#e0e0e0',
   };
 
+  if (!isThemeLoaded) {
+    return null;
+  }
+  
   return (
   <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
     <View style={[

@@ -43,31 +43,33 @@ export default function BottomPanelButtonsComponent({
     }, [isDarkMode]);
 
     const openInMaps = () => {
-      if (!randomBars || randomBars.length === 0) {
-        Alert.alert("No bars selected");
-        return;
-      }
+    if (!randomBars || randomBars.length === 0) {
+      Alert.alert("No bars selected");
+      return;
+    }
+    if (!location) {
+      Alert.alert("Location not available");
+      return;
+    }
 
-      if (!location) {
-        Alert.alert("Location not available");
-        return;
-      }
+    const origin = `${location.coords.latitude},${location.coords.longitude}`; // OWN LOCATION
+    const destination = `${randomBars[randomBars.length - 1].lat},${randomBars[randomBars.length - 1].lon}`; //LAST BAR OF THE RANDOM BARS LAT AND LON
 
-      const origin = `${location.coords.latitude},${location.coords.longitude}`;
+    const waypoints = randomBars
+      .slice(0, randomBars.length - 1) 
+      .map((bar) => `${bar.lat},${bar.lon}`)
+      .join('|');
 
-      const destination = `${randomBars[randomBars.length - 1].lat},${randomBars[randomBars.length - 1].lon}`;
+    // This is the correct Google Maps URL format
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=walking${
+      waypoints ? `&waypoints=${waypoints}` : ''
+    }`;
 
-      const waypoints = randomBars
-        .slice(0, randomBars.length - 1) // all except last bar
-        .map((bar) => `${bar.lat},${bar.lon}`)
-        .join('|');
-
-        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=walking${
-        waypoints ? `&waypoints=${waypoints}` : ''
-      }`;
-
-      Linking.openURL(url);
-    };
+    Linking.openURL(url).catch((err) => {
+      console.error('Failed to open Google Maps', err);
+      Alert.alert('Error', 'Could not open Google Maps.');
+    });
+};
 
     return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
@@ -170,7 +172,7 @@ export default function BottomPanelButtonsComponent({
             style={styles.togglePickerButton}
           >
             <Text style={styles.buttonText}>
-              Fetch route
+              {isLoading ? "Loading..." : "Fetch route"}
             </Text>
           </Pressable>
           <Pressable
