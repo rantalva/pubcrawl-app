@@ -91,11 +91,29 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
-  description: {
+  descriptionDarkTheme: {
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 32,
+    color: 'white'
+  },
+  descriptionLightTheme: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+    color: 'black'
+  },
+  iconDarkTheme: {
+    color: 'white',
+    fontSize: 50,
+    padding: 30
+  },
+  iconLightTheme: {
+    color: 'black',
+    fontSize: 50,
+    padding: 30
   },
   stepsContainer: {
     width: '100%',

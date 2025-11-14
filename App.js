@@ -8,6 +8,7 @@ import MainMapScreen from './components/MainMapScreen';
 import ThemeContext from './Contexts/themeContext';
 import { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PaperProvider } from 'react-native-paper';
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -54,6 +55,7 @@ export default function App() {
   }
   
   return (
+  <PaperProvider>
   <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
     <View style={[
       styles.container,
@@ -112,5 +114,6 @@ export default function App() {
     </NavigationContainer>
     </View>
     </ThemeContext.Provider>
+    </PaperProvider>
   );
 }

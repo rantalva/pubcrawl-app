@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Button } from "react-native";
+import { View, Text, Pressable} from "react-native";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
 import { useState, useCallback, useContext } from "react";
@@ -7,7 +7,7 @@ import { Linking, Alert} from 'react-native';
 import { FlashList } from "@shopify/flash-list";
 import { ScrollView } from "react-native-gesture-handler";
 import ThemeContext from "../Contexts/themeContext";
-
+import { Button } from 'react-native-paper';
 
 export default function BottomPanelButtonsComponent({
     radius,
@@ -85,7 +85,6 @@ export default function BottomPanelButtonsComponent({
            Note: Only {bars.length} bars found (less than selected {selectedCount})
          </Text>
        )}
-
           <Slider
             style={{ width: "100%", height: 40 }}
             minimumValue={500}
@@ -94,22 +93,24 @@ export default function BottomPanelButtonsComponent({
             value={radius}
             onValueChange={setRadius}
             minimumTrackTintColor="#1E90FF"
-            maximumTrackTintColor={isDarkMode ? "#fff" : "#000000"}
+            maximumTrackTintColor={isDarkMode ? "#383737ff" : "#000000"}
           />
-        </View>  
+        </View>
       <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>
         Selected amount of bars for pub crawl: {selectedCount}
       </Text>
       {/* Button to toggle Picker */}
-      <Pressable
+      <Button
         onPress={() => setPickerVisible((prev) => !prev)}
-        style={styles.togglePickerButton}
+        mode="contained" 
+        style={{ marginVertical: 5 }}
+        contentStyle={{ paddingVertical: 5 }}
+        buttonColor={isDarkMode ? '#fff' : '#000'}
+        textColor={isDarkMode ? '#000' : '#fff'}
       >
-        <Text style={styles.buttonText}>
-          {pickerVisible ? "Hide Picker" : "Select Number of Bars"}
-        </Text>
-      </Pressable>
-
+        {/* Conditional text logic goes inside the button */}
+        {pickerVisible ? "Hide Picker" : "Select Number of Bars"}
+      </Button>
           {/* Conditional Picker */}
           {pickerVisible && (
             <View style={styles.pickerView}>
@@ -130,16 +131,19 @@ export default function BottomPanelButtonsComponent({
               </Picker>
             </View>
           )}
-
-        <Pressable
+        <Button
+          icon="beer"
           onPress={async () => {await generateRandomBars(); handleOpenPress();}}
-          style={styles.generatePubCrawlButton}
+          mode="contained"
+          loading={isGenerating}
           disabled={isLoading || isGenerating}
+          style={{ marginVertical: 5 }}
+          contentStyle={{ paddingVertical: 5 }}
+          buttonColor={isDarkMode ? '#fff' : '#000'}
+          textColor={isDarkMode ? '#000' : '#fff'}
         >
-          <Text style={styles.buttonText}>
-            {isGenerating ? "Loading..." : "Generate pub crawl!"}
-          </Text>
-        </Pressable>
+          Generate pub crawl!
+        </Button>
 
         {/* Additional warning when generating with limited bars */}
         {selectedCount > bars.length && bars.length > 0 && (
@@ -167,33 +171,41 @@ export default function BottomPanelButtonsComponent({
 
       {randomBars.length > 0 && (
         <>
-          <Pressable
-            onPress={async () => { 
-              await fetchSingleRoute(); 
-              handleClosePress(); 
-            }}
-            style={styles.togglePickerButton}
-          >
-            <Text style={styles.buttonText}>
-              {isRouting ? "Loading..." : "Fetch route"}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={openInMaps}
-            style={styles.googleMapsButton}
-          >
-            <Text style={styles.buttonText}>
-              Open in Google Maps
-            </Text>
-          </Pressable>
-          <Pressable
+          <Button
+            icon="map-marker"
+            onPress={async () => {await fetchSingleRoute(); handleClosePress();}}
+            mode="contained"
+            loading={isRouting}
+            disabled={isLoading || isRouting}
+            style={{ marginVertical: 5 }}
+            contentStyle={{ paddingVertical: 5 }}
+            buttonColor={isDarkMode ? '#fff' : '#000'}
+            textColor={isDarkMode ? '#000' : '#fff'}
+        >
+          Fetch route
+        </Button>
+        <Button
+          icon='google'
+          onPress={openInMaps}
+          mode="contained"
+          style={{ marginVertical: 5 }}
+          contentStyle={{ paddingVertical: 5 }}
+          buttonColor="green"
+          textColor="white"
+        >
+          Open in Google Maps
+        </Button>
+        <Button
+            icon='delete'
             onPress={() => {setRandomBars([]); handleCollapsePress(); setRoutes([]);}}
-            style={styles.emptyBarsButton}
-          >
-            <Text style={styles.buttonText}>
-              Empty bars
-            </Text>
-          </Pressable>
+            mode="contained"
+            style={{ marginVertical: 5 }}
+            contentStyle={{ paddingVertical: 5 }}
+            buttonColor="red"
+            textColor="white"
+        >
+          Empty bars
+        </Button>
         </>
       )}
       </View>
