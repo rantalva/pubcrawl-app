@@ -29,6 +29,25 @@ You can also select to open route in Google maps to view Public Transportation t
 ### Navigation:
 [React Native bottomtabs](https://reactnavigation.org/docs/bottom-tab-navigator/) used for basic bottom tab navigation.
 
+### How app is composed / Components:
+
+Inside App.js we have "main" component MainMapScreen which renders mapComponent, which is rendered always. This is to control the bottomsheet from App.js with bottomtab navigation.
+
+Inside mapComponent there is bottomPanelComponent as a child component to mapComponent, so when mapComponent is rendered the bottomPanelComponent is rendered aswell.
+
+Inside bottomPanelComponent there is bottomPanelButtonsComponents as a child component of bottomPanelComponent, so buttons, slider and picker are rendered always when bottomPanelComponent is rendered.
+
+### Custom hooks:
+
+This was a learning experience and had to ask help from AI a bit.
+
+useFetchBars.js: Fetches the bars from Geoapify Places Api and sets them to constant bars in mapComponent.js. Had to use a timeout because api would crash
+
+useLocation.js: Fetches the user location. This was the first one I used for learning
+
+usePubCrawl.js: Creates the pubcrawl and routes.
+
+
 ![alt text](./assets/icon.png)
 ![alt text](./assets/IMG_6163.PNG)
 ![alt text](./assets/IMG_6164.PNG)
