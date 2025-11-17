@@ -74,7 +74,7 @@ export default function BottomPanelButtonsComponent({
 };
 
     return (
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
+      <ScrollView style={styles.flexView} contentContainerStyle={ styles.flexView.paddingBottom}>
       <View>
          <Text style={isDarkMode ? styles.isDarkModeTrue : styles.isDarkModeFalse}>Found {bars.length} from radius: {radius} m</Text>
        <View>
@@ -160,9 +160,9 @@ export default function BottomPanelButtonsComponent({
           nestedScrollEnabled={true}
           scrollEnabled={false}
           ListEmptyComponent={
-            <View style={{ padding: 1, alignItems: 'center' }}>
-              <Text style={{ color: '#666' }}>No bars selected yet</Text>
-              <Text style={{ color: '#999', fontSize: 12, marginTop: 5 }}>
+            <View style={styles.flashList}>
+              <Text style={styles.flashListNoItems}>No bars selected yet</Text>
+              <Text style={styles.flashListNoItems2}>
                 Press "Select Random Bars" to get started
               </Text>
             </View>

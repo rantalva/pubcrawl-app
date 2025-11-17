@@ -6,6 +6,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  flexView: {
+    flex: 1,
+    paddingBottom: 20
+  },
   map: {
     flex: 1,
     width: '100%',
@@ -222,5 +226,20 @@ export const styles = StyleSheet.create({
   buttonStyleGeneral: {
     marginVertical: 5,
     paddingVertical: 5,
+  },
+  flashList: {
+     padding: 1, 
+     alignItems: 'center'
+  },
+    flashListNoItems: {
+     color: '#666'
+  },
+    flashListNoItems2: {
+    color: '#999', 
+    fontSize: 12, 
+    marginTop: 5
+  },
+  bottomsheetIsDarkModeTrue: {
+    color: '#1e1e1e'
   }
 });

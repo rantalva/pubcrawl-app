@@ -65,7 +65,7 @@ export default function App() {
       <Tab.Navigator 
           screenOptions={{
           tabBarStyle: tabBarStyles,
-          tabBarActiveTintColor: isDarkMode ? '#fff' : '#000',
+          tabBarActiveTintColor: isDarkMode ? styles.isDarkModeTrue : styles.isDarkModeFalse,
           tabBarInactiveTintColor: isDarkMode ? '#888' : '#666',
         }}
       >
