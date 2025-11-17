@@ -39,7 +39,7 @@ export default function BottomPanelButtonsComponent({
           styles.itemContainer,
           { backgroundColor: isDarkMode ? '#333' : '#eee' }
         ]}>
-          <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>{index + 1}. {item.name}</Text>
+          <Text style={isDarkMode ? styles.isDarkModeTrue : styles.isDarkModeFalse}>{index + 1}. {item.name}</Text>
         </View>
       );
     }, [isDarkMode]);
@@ -76,7 +76,7 @@ export default function BottomPanelButtonsComponent({
     return (
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
       <View>
-         <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>Found {bars.length} from radius: {radius} m</Text>
+         <Text style={isDarkMode ? styles.isDarkModeTrue : styles.isDarkModeFalse}>Found {bars.length} from radius: {radius} m</Text>
        <View>
 
         {/* Warning text when selected amount exceeds found bars */}
@@ -86,25 +86,25 @@ export default function BottomPanelButtonsComponent({
          </Text>
        )}
           <Slider
-            style={{ width: "100%", height: 40 }}
+            style={styles.slider}
             minimumValue={500}
             maximumValue={3000}
             step={100}
             value={radius}
             onValueChange={setRadius}
-            minimumTrackTintColor="#1E90FF"
-            maximumTrackTintColor={isDarkMode ? "#383737ff" : "#000000"}
+            minimumTrackTintColor={styles.slider.minimumTrackTintColor}
+            maximumTrackTintColor={isDarkMode ? styles.isDarkModeTrue : styles.isDarkModeFalse}
           />
         </View>
-      <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>
+      <Text style={isDarkMode ? styles.isDarkModeTrue : styles.isDarkModeFalse}>
         Selected amount of bars for pub crawl: {selectedCount}
       </Text>
       {/* Button to toggle Picker */}
       <Button
         onPress={() => setPickerVisible((prev) => !prev)}
         mode="contained" 
-        style={{ marginVertical: 5 }}
-        contentStyle={{ paddingVertical: 5 }}
+        style={{marginVertical: styles.buttonStyleGeneral.marginVertical}}
+        contentStyle={{marginVertical: styles.buttonStyleGeneral.paddingVertical}}
         buttonColor={isDarkMode ? '#fff' : '#000'}
         textColor={isDarkMode ? '#000' : '#fff'}
       >
@@ -137,8 +137,8 @@ export default function BottomPanelButtonsComponent({
           mode="contained"
           loading={isGenerating}
           disabled={isLoading || isGenerating}
-          style={{ marginVertical: 5 }}
-          contentStyle={{ paddingVertical: 5 }}
+          style={{marginVertical: styles.buttonStyleGeneral.marginVertical}}
+          contentStyle={{marginVertical: styles.buttonStyleGeneral.paddingVertical}}
           buttonColor={isDarkMode ? '#fff' : '#000'}
           textColor={isDarkMode ? '#000' : '#fff'}
         >
@@ -177,8 +177,8 @@ export default function BottomPanelButtonsComponent({
             mode="contained"
             loading={isRouting}
             disabled={isLoading || isRouting}
-            style={{ marginVertical: 5 }}
-            contentStyle={{ paddingVertical: 5 }}
+            style={{marginVertical: styles.buttonStyleGeneral.marginVertical}}
+            contentStyle={{marginVertical: styles.buttonStyleGeneral.paddingVertical}}
             buttonColor={isDarkMode ? '#fff' : '#000'}
             textColor={isDarkMode ? '#000' : '#fff'}
         >
@@ -188,8 +188,8 @@ export default function BottomPanelButtonsComponent({
           icon='google'
           onPress={openInMaps}
           mode="contained"
-          style={{ marginVertical: 5 }}
-          contentStyle={{ paddingVertical: 5 }}
+          style={{marginVertical: styles.buttonStyleGeneral.marginVertical}}
+          contentStyle={{marginVertical: styles.buttonStyleGeneral.paddingVertical}}
           buttonColor="green"
           textColor="white"
         >
@@ -199,8 +199,8 @@ export default function BottomPanelButtonsComponent({
             icon='delete'
             onPress={() => {setRandomBars([]); handleCollapsePress(); setRoutes([]);}}
             mode="contained"
-            style={{ marginVertical: 5 }}
-            contentStyle={{ paddingVertical: 5 }}
+            style={{marginVertical: styles.buttonStyleGeneral.marginVertical}}
+            contentStyle={{marginVertical: styles.buttonStyleGeneral.paddingVertical}}
             buttonColor="red"
             textColor="white"
         >

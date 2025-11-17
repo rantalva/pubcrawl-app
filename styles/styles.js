@@ -207,5 +207,20 @@ export const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: 10,
     marginBottom: 10
+  },
+  slider: {
+    width: "100%",
+    height: 40,
+    minimumTrackTintColor: '#291aafff'
+  },
+  isDarkModeTrue: {
+    color: '#fff'
+  },
+  isDarkModeFalse: {
+    color: '#000'
+  },
+  buttonStyleGeneral: {
+    marginVertical: 5,
+    paddingVertical: 5,
   }
 });
