@@ -49,7 +49,5 @@ usePubCrawl.js: Creates the pubcrawl and routes.
 
 
 ![alt text](./assets/icon.png)
-![alt text](./assets/IMG_6163.PNG)
 ![alt text](./assets/IMG_6164.PNG)
-![alt text](./assets/IMG_6165.PNG)
 ![alt text](./assets/IMG_6166.PNG)
